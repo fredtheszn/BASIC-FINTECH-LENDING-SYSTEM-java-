@@ -1,0 +1,88 @@
+import java.util.*;
+
+class User {
+    String name;
+    String userId;
+    double creditScore;
+    double loanBalance;
+
+    public User(String name, String userId, double creditScore) {
+        this.name = name;
+        this.userId = userId;
+        this.creditScore = creditScore;
+        this.loanBalance = 0;
+    }
+}
+
+class LoanRequest {
+    String requestId;
+    User user;
+    double amount;
+    boolean approved;
+
+    public LoanRequest(String requestId, User user, double amount) {
+        this.requestId = requestId;
+        this.user = user;
+        this.amount = amount;
+        this.approved = false;
+    }
+}
+
+public class LendingFintechApp {
+    static Map<String, User> users = new HashMap<>();
+    static List<LoanRequest> loanRequests = new ArrayList<>();
+
+    public static void main(String[] args) {
+        // Sample users
+        registerUser("Fred Daniel", "user001", 720);
+        registerUser("Jane Doe", "user002", 640);
+
+        // Request a loan
+        requestLoan("user001", 5000);
+        requestLoan("user002", 3000);
+
+        // Process loans
+        processLoanRequests();
+
+        // Display all loan statuses
+        displayLoanStatus();
+    }
+
+    public static void registerUser(String name, String userId, double creditScore) {
+        User user = new User(name, userId, creditScore);
+        users.put(userId, user);
+        System.out.println("Registered user: " + name);
+    }
+
+    public static void requestLoan(String userId, double amount) {
+        User user = users.get(userId);
+        if (user != null) {
+            String requestId = "REQ" + (loanRequests.size() + 1);
+            LoanRequest request = new LoanRequest(requestId, user, amount);
+            loanRequests.add(request);
+            System.out.println("Loan requested by " + user.name + " for $" + amount);
+        }
+    }
+
+    public static void processLoanRequests() {
+        for (LoanRequest request : loanRequests) {
+            if (request.user.creditScore >= 700) {
+                request.approved = true;
+                request.user.loanBalance += request.amount;
+                System.out.println("Loan approved for: " + request.user.name);
+            } else {
+                System.out.println("Loan denied for: " + request.user.name);
+            }
+        }
+    }
+
+    public static void displayLoanStatus() {
+        System.out.println("\n--- Loan Status ---");
+        for (LoanRequest request : loanRequests) {
+            System.out.println("User: " + request.user.name +
+                    ", Amount: $" + request.amount +
+                    ", Approved: " + request.approved +
+                    ", Total Loan Balance: $" + request.user.loanBalance);
+        }
+    }
+}
